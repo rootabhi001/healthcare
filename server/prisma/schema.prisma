@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(USER)
+  clientId     Int?     @unique
+  client       Client?  @relation(fields: [clientId], references: [clientId])
+  createdAt    DateTime @default(now())
+}
+
+model Client {
+  clientId        Int            @id
+  fullName        String
+  email           String         @unique
+  mobile          String?
+  city            String?
+  state           String?
+  age             Int?
+  gender          String?
+  occupation      String?
+  healthCondition String?
+  beautyGoal      String?
+  createdAt       DateTime       @default(now())
+
+  user            User?
+  reports         HealthReport[]
+
+  @@index([city])
+  @@index([healthCondition])
+  @@index([email])
+}
+
+model HealthReport {
+  reportId           String   @id
+  clientId           Int
+  client             Client   @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+  reportDate         DateTime
+  hemoglobin         Float?
+  vitaminD           Float?
+  cholesterol        Float?
+  bloodSugarFasting  Float?
+  creatinine         Float?
+  urineProtein       String?
+  bmi                Float?
+  doctorNotes        String?
+  createdAt          DateTime @default(now())
+
+  @@index([clientId, reportDate])
+}

@@ -118,6 +118,7 @@ cd server
 npm install
 npx prisma generate
 npx prisma migrate deploy
+npm run seed
 npm start
 ```
 
